@@ -23,14 +23,22 @@
 </head>
 
 <script>
+  // Load default data.
   $(document).ready(() => {
     loadData($('#basic-url').val());
   });
 
   let coronaData = {};
+  const charts = {};
 
-  function loadData(key) {
-    var ctxL = document.getElementById("lineChart").getContext('2d');
+  // Load the chart.
+  function loadChart(key) {
+    // Clear all previous charts.
+    Object.values(charts).forEach((chart) => {
+      chart.destroy();
+    });
+
+    // Load data.
     const labels = [];
     const confirmedData = [];
     const deathsData = [];
@@ -41,9 +49,11 @@
       confirmedData.push(elem.confirmed);
       deathsData.push(elem.deaths);
       recoveredData.push(elem.recovered);
-    })
+    });
 
-    var myLineChart = new Chart(ctxL, {
+    // All charts
+    var ctxL = document.getElementById("lineChart").getContext('2d');
+    charts.allChart = new Chart(ctxL, {
       type: 'line',
       data: {
         labels,
@@ -83,12 +93,18 @@
         ]
       },
       options: {
+        title: {
+          display: true,
+          text: key
+        },
         responsive: true
       }
     });
 
+    // Confirmed chart
     var confirmed_ctxL = document.getElementById("confirmed-lineChart").getContext('2d');
-    var myLineChart = new Chart(confirmed_ctxL, {
+    confirmed_ctxL.clearRect(0, 0, confirmed_ctxL.canvas.width, confirmed_ctxL.canvas.height);
+    charts.confirmedChart = new Chart(confirmed_ctxL, {
       type: 'line',
       data: {
         labels,
@@ -105,12 +121,18 @@
         }]
       },
       options: {
+        title: {
+          display: true,
+          text: key
+        },
         responsive: true
       }
     });
 
+    // Deaths chart
     var deaths_ctxL = document.getElementById("deaths-lineChart").getContext('2d');
-    var myLineChart = new Chart(deaths_ctxL, {
+    deaths_ctxL.clearRect(0, 0, deaths_ctxL.canvas.width, deaths_ctxL.canvas.height);
+    charts.deathsChart = new Chart(deaths_ctxL, {
       type: 'line',
       data: {
         labels,
@@ -127,12 +149,18 @@
         }]
       },
       options: {
+        title: {
+          display: true,
+          text: key
+        },
         responsive: true
       }
     });
 
+    // Recovered chart
     var recovered_ctxL = document.getElementById("recovered-lineChart").getContext('2d');
-    var myLineChart = new Chart(recovered_ctxL, {
+    recovered_ctxL.clearRect(0, 0, recovered_ctxL.canvas.width, recovered_ctxL.canvas.height);
+    charts.recoveredChart = new Chart(recovered_ctxL, {
       type: 'line',
       data: {
         labels,
@@ -149,16 +177,23 @@
         }]
       },
       options: {
+        title: {
+          display: true,
+          text: key
+        },
         responsive: true
       }
     });
   }
 
+  // Get data from a source json url.
   function fetchData(e) {
     const link = e.source.value;
     loadData(link);
   }
 
+
+  // Populate variables with the data received.
   function loadData(val) {
     console.log($('#basic-url').val());
 
@@ -174,7 +209,7 @@
         const option = document.createElement("a");
         option.className = "dropdown-item";
         option.text = key;
-        option.onclick = () => { console.log(key); loadData(key); };
+        option.onclick = () => { console.log(key); loadChart(key); };
         dropdown.append(option);
       });
     });
@@ -182,7 +217,7 @@
 </script>
 
 <body class="container">
-  <form action="#" onsubmit="return fetchData(this)" id="url-form">
+  <form onsubmit="fetchData(this); return false;" id="url-form">
     <div class="input-group mb-3">
       <div class="input-group-prepend"><span class="input-group-text" id="basic-addon3">Source</div> <input type="text"
         class="form-control" id="basic-url" aria-describedby="source-info" name="source"
@@ -203,16 +238,13 @@
   </div>
 
   <div>
-    <h1>All Data:</h1>
+    <center>
+      <h2>Charts</h2>
+    </center>
+    <hr />
     <canvas id="lineChart"></canvas>
-
-    <h1>Confirmed:</h1>
     <canvas id="confirmed-lineChart"></canvas>
-
-    <h1>Deaths:</h1>
     <canvas id="deaths-lineChart"></canvas>
-
-    <h1>Recovered:</h1>
     <canvas id="recovered-lineChart"></canvas>
   </div>
 </body>
