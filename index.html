@@ -24,7 +24,7 @@
 
 <script>
   $(document).ready(() => {
-    loadData($('#basic-url').value);
+    loadData($('#basic-url').val());
   });
 
   let coronaData = {};
@@ -160,6 +160,8 @@
   }
 
   function loadData(val) {
+    console.log($('#basic-url').val());
+
     fetch(val).then((res) => {
       return res.json();
     }).then((data) => {
